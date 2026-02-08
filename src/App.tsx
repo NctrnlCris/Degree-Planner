@@ -49,19 +49,19 @@ function App() {
     };
 
   return (
-    <div style={{ padding: '30px', background: '#f8fafc', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
-      
+    <div style={{ padding: '30px', background: '#f8fafc', minHeight: '100vh', fontFamily: 'Roboto, sans-serif' }}>
+    
       <header style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
         marginBottom: '40px',
-        background: 'white',
+        background: 'linear-gradient(90deg, #000B72 50%, #2F4AAC 100%)',
         padding: '20px',
         borderRadius: '16px',
         boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
       }}>
-        <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>Degree Planner</h2>
+        <h2 style={{ margin: 0, color: 'white', fontSize: '1.25rem', fontFamily: 'Roboto', fontWeight: 600 }}>UBC On Track</h2>
         <div style={{ 
           border: '2px dashed #cbd5e1', 
           borderRadius: '12px', 
@@ -113,16 +113,16 @@ function App() {
                     borderRadius: '50%', 
                     marginRight: '20px', 
                     flexShrink: 0,
-                    background: `conic-gradient(#10b981 0% ${done}%, #f59e0b ${done}% ${done + ip}%, #e2e8f0 ${done + ip}% 100%)` 
+                    background: `conic-gradient(#10b981 0% ${done}%, #E6BD39 ${done}% ${done + ip}%, #e2e8f0 ${done + ip}% 100%)` 
                   }} />
                   <div style={{ flex: 1 }}>
                     <h4 style={{ margin: '0 0 4px 0', fontSize: '1.1rem' }}>{name}</h4>
                     <div style={{ fontSize: '0.9rem', color: '#475569' }}>
-                      <span style={{ fontWeight: 'bold', color: '#10b981' }}>{data.completed ?? 0}</span>
+                      <span style={{ fontWeight: 'bold', color: '#0EDB0A' }}>{data.completed ?? 0}</span>
                       <span style={{ color: '#94a3b8' }}> / {data.required}</span> Credits
                     </div>
                     {(data.inProgress ?? 0) > 0 && (
-                      <div style={{ fontSize: '0.8rem', color: '#f59e0b', fontWeight: 500, marginTop: '2px' }}>
+                      <div style={{ fontSize: '0.8rem', color: '#E6BD39', fontWeight: 500, marginTop: '2px' }}>
                         + {data.inProgress} In Progress
                       </div>
                     )}
@@ -135,9 +135,9 @@ function App() {
 
       {/* Grid of Status Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-        <Card title="Completed" color="#059669" list={completedList} icon="✅" />
-        <Card title="In Progress" color="#d97706" list={inProgressList} icon="⏳" />
-        <Card title="Still Needing" color="#dc2626" list={stillNeedingList} icon="🚩" />
+        <Card title="Completed" color="#0EDB0A" list={completedList} icon="✅" />
+        <Card title="In Progress" color="#E6BD39" list={inProgressList} icon="⏳" />
+        <Card title="Still Needing" color="#E63939" list={stillNeedingList} icon="🚩" />
       </div>
     </div>
   );
