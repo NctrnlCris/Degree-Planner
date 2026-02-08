@@ -23,15 +23,18 @@
 ## Getting Started
 
 ### 1. Backend (Python)
+
+
 ```bash
-# Navigate to the backend folder
-cd backend
+    # Set up virtual environment
+    cd backend
+    
+    python -m venv ./venv
+    source ./venv/bin/activate
+    pip install -Ur requirements.txt
 
-# Install dependencies
-pip install flask flask-cors pandas
-
-# Start the server
-python app.py
+    # Run Flask app
+    flask --app app run 
 ```
 
 ### 2. Frontend (Typescript)
