@@ -1,4 +1,5 @@
 **/*.venv
 dummy_data
+node_modules
 uploads
 **/__pycache__
