@@ -8,12 +8,15 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    """
+    Shows HTML for main page (mainly for testing)
+    """
     return render_template("index.html")
 
 @app.route('/', methods=['POST'])
 def upload_file():
     """
-    Handle uploaded file
+    Handle uploaded file and save it to the "uploads" directory.
     """
     uploaded_file = request.files['file']
     if uploaded_file.filename != '':
@@ -22,10 +25,23 @@ def upload_file():
 
 @app.route('/<string:file_name>/credits')
 def get_credits_info(file_name):
-    # 'user_id' is the variable captured from the URL
+    """
+    Processes the corresponding file from the URL and returns
+    the .json file with the credits breakdown for applicable requirements
+    NOTE: the URL should not contain the file extension. It is assumed to be .xlsx.
+    
+    :param file_name: the name of the input file to process.
+    """
     return Response(get_processed_with_credits(file_name), mimetype='application/json')
 
 @app.route('/<string:file_name>/remaining')
 def get_remaining_info(file_name):
-    # 'user_id' is the variable captured from the URL
+    """
+    Processes the corresponding file from the URL and returns
+    the .json file with the credits breakdown for applicable requirements
+    NOTE: the URL should not contain the file extension. It is assumed to be .xlsx.
+    
+    :param file_name: the name of the input file to process.
+    """
+
     return Response(get_processed_remaining(file_name), mimetype='application/json')
