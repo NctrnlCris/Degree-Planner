@@ -120,7 +120,7 @@ function App() {
                                 }
                             }}
                         >
-                            <FiUpload size={40} color="#94a3b8" style={{ marginBottom: 8 }} />
+                            <FiUpload size={40} color="#94a3b8" style={{ marginLeft: 'auto', marginRight: 'auto', marginBottom: 8, display: 'block',}} />
                             <input
                                 ref={fileInputRef}
                                 type="file"
@@ -244,7 +244,6 @@ function App() {
                                     <div key={idx} style={styles.courseRow}>
                                         <div style={styles.courseInfo}>
                                             <span style={styles.courseCode}>{course}</span>
-                                            <span style={styles.courseCredits}>— credits</span>
                                         </div>
                                         <span style={{
                                             ...styles.courseBadge,
