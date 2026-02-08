@@ -451,6 +451,8 @@ const styles: Record<string, React.CSSProperties> = {
         marginBottom: 12,
         width: '100%',
         justifyContent: 'center',
+        minHeight: 48,
+        textAlign: 'center',
     },
     reqIcon: {
         flexShrink: 0,
