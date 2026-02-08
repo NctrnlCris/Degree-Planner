@@ -1,0 +1,14 @@
+[
+    {
+      "name": "completed",
+      "list": ["CPSC 110", "ENGL 110", "MATH 100"]
+    },
+    {
+      "name": "in-progress",
+      "list": ["CPSC 210", "MATH 101"]
+    },
+    {
+      "name": "still-needing",
+      "list": ["CPSC 221", "STAT 200", "COMM 391"]
+    }
+  ]
