@@ -26,15 +26,15 @@
 
 
 ```bash
-    # Set up virtual environment
-    cd backend
-    
-    python -m venv ./venv
-    source ./venv/bin/activate
-    pip install -Ur requirements.txt
+# Set up virtual environment
+cd backend
 
-    # Run Flask app
-    flask --app app run 
+python -m venv ./venv
+source ./venv/bin/activate
+pip install -Ur requirements.txt
+
+# Run Flask app
+flask --app app run 
 ```
 
 ### 2. Frontend (Typescript)
