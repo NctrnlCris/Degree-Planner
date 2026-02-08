@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { useDegreeStatus } from './useDegreeStatus';
+import { GrCheckmark } from "react-icons/gr";
+import { GrInProgress } from "react-icons/gr";
+import { GrCircleAlert } from "react-icons/gr";
+import { GrDocumentUpload } from "react-icons/gr";
 
 function App() {
     // 1. Get reactive state and the update function from your hook
@@ -70,7 +74,10 @@ function App() {
           transition: 'all 0.3s ease'
         }}>
           <label style={{ cursor: 'pointer', color: '#3b82f6', fontWeight: 'bold', fontSize: '0.9rem' }}>
-            {isUploading ? "Processing..." : "↑ Upload Transcript"}
+            
+            <GrDocumentUpload />
+            {isUploading ? "Processing..." : "Upload Transcript"}
+
             <input type="file" onChange={handleFileUpload} style={{ display: 'none' }} accept=".xlsx, .xls, .csv" />
           </label>
         </div>
@@ -135,17 +142,43 @@ function App() {
 
       {/* Grid of Status Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-        <Card title="Completed" color="#0EDB0A" list={completedList} icon="✅" />
-        <Card title="In Progress" color="#E6BD39" list={inProgressList} icon="⏳" />
-        <Card title="Still Needing" color="#E63939" list={stillNeedingList} icon="🚩" />
+        <CompleteCard title="Completed" color="#0EDB0A" list={completedList} />
+        <InProgressCard title="In Progress" color="#E6BD39" list={inProgressList} />
+        <StillNeedingCard title="Still Needing" color="#E63939" list={stillNeedingList} />
       </div>
     </div>
   );
 }
 
-const Card = ({ title, color, list, icon }: any) => (
+const CompleteCard = ({ title, color, list }: any) => (
   <div style={{ background: 'white', padding: '20px', borderRadius: '16px', borderTop: `4px solid ${color}` }}>
-    <h3 style={{ color: color, margin: '0 0 15px 0' }}>{icon} {title}</h3>
+    <h3 style={{ color: color, margin: '0 0 0 0' }}> <GrCheckmark /> {title}</h3>
+    <ul style={{ listStyle: 'none', padding: 0 }}>
+      {list.map((c: string, index: number) => (
+        <li key={index} style={{ padding: '8px 0', borderBottom: '1px solid #f1f5f9', fontSize: '0.9rem' }}>
+          {c}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const InProgressCard = ({ title, color, list }: any) => (
+  <div style={{ background: 'white', padding: '20px', borderRadius: '16px', borderTop: `4px solid ${color}` }}>
+    <h3 style={{ color: color, margin: '0 0 0 0' }}> <img src="/images/complete.svg" alt="" /> <GrInProgress /> {title}</h3>
+    <ul style={{ listStyle: 'none', padding: 0 }}>
+      {list.map((c: string, index: number) => (
+        <li key={index} style={{ padding: '8px 0', borderBottom: '1px solid #f1f5f9', fontSize: '0.9rem' }}>
+          {c}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const StillNeedingCard = ({ title, color, list }: any) => (
+  <div style={{ background: 'white', padding: '20px', borderRadius: '16px', borderTop: `4px solid ${color}` }}>
+    <h3 style={{ color: color, margin: '0 0 0 0' }}> <img src="/images/complete.svg" alt="" /> <GrCircleAlert /> {title}</h3>
     <ul style={{ listStyle: 'none', padding: 0 }}>
       {list.map((c: string, index: number) => (
         <li key={index} style={{ padding: '8px 0', borderBottom: '1px solid #f1f5f9', fontSize: '0.9rem' }}>
