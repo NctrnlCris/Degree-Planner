@@ -39,8 +39,7 @@ flask --app app run
 
 ### 2. Frontend (Typescript)
 ```bash
-# Navigate to the frontend folder
-cd frontend
+# Navigate to the root folder in new terminal
 
 # Install dependencies
 npm install
