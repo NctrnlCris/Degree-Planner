@@ -1,9 +1,23 @@
 """
-Functions that process the input CSV data.
+Functions that process the input Excel/CSV transcript data.
 """
+import os
 import pandas as pd
 import numpy as np
+
 UPLOAD_DIR = "uploads"
+
+
+def load_transcript(filepath: str) -> pd.DataFrame:
+    """Load transcript from Excel or CSV file."""
+    ext = os.path.splitext(filepath)[1].lower()
+    if ext in ('.xlsx', '.xls'):
+        # Excel often has a title row; skip first row
+        return pd.read_excel(filepath, skiprows=1)
+    elif ext == '.csv':
+        return pd.read_csv(filepath, skiprows=0)
+    else:
+        raise ValueError(f"Unsupported file format: {ext}")
 
 def process_file_with_credits(df: pd.DataFrame):
     """
@@ -51,41 +65,43 @@ def process_remaining(df: pd.DataFrame):
     :param df_indiv: Description
     :type df_indiv: pd.DataFrame
     """
-    df_credits = df[df["Requirement"].str.extract(r"^(\d+)\s*\D")]
+    credit_mask = df["Requirement"].str.extract(r"^(\d+)\s*\D", expand=False).notna()
+    df_credits = df[credit_mask]
 
     output_remain_df = df[~df['Requirement'].isin(df_credits["Requirement"])]
     output_remain_df = output_remain_df.drop_duplicates("Requirement")[["Requirement", "Status"]]
 
-    complete = output_remain_df[output_remain_df["Status"] == "Satisfied"]["Requirement"]
-    inprogress = output_remain_df[output_remain_df["Status"] == "In Progress"]["Requirement"]
-    missing = output_remain_df[output_remain_df["Status"] == "Not Satisfied"]["Requirement"]
+    complete = output_remain_df[output_remain_df["Status"] == "Satisfied"]["Requirement"].tolist()
+    inprogress = output_remain_df[output_remain_df["Status"] == "In Progress"]["Requirement"].tolist()
+    missing = output_remain_df[output_remain_df["Status"] == "Not Satisfied"]["Requirement"].tolist()
     data = {
-    'name': ['complete', 'inprogress', 'missing'],
-    'list': [complete, inprogress, missing],
+        'name': ['complete', 'inprogress', 'missing'],
+        'list': [complete, inprogress, missing],
     }
     output_df = pd.DataFrame(data)
-    return output_df.to_json(orient="records",indent=4,index=False)
+    return output_df.to_json(orient="records", indent=4, index=False)
 
 
-def get_processed_with_credits(filename: str):
+def get_processed_with_credits(filepath: str):
     """
     Produce the json for the degree requirements that can be broken down
     by credits required/completed/in-progress.
-    
-    :param filename: The name of the file to process.
-    :type filename: str
+
+    :param filepath: Full path to the Excel or CSV file.
+    :type filepath: str
     """
-    input_df = pd.read_excel(f"./{UPLOAD_DIR}/{filename}.xlsx", skiprows=1)
+    input_df = load_transcript(filepath)
     credits_output_json = process_file_with_credits(input_df)
     return credits_output_json
 
-def get_processed_remaining(filename: str):
+
+def get_processed_remaining(filepath: str):
     """
     Produce the json for the remaining degree requirements (no credit breakdown).
 
-    :param filename: The name of the file to process.
-    :type filename: str
+    :param filepath: Full path to the Excel or CSV file.
+    :type filepath: str
     """
-    input_df = pd.read_excel(f"./{UPLOAD_DIR}/{filename}.xlsx", skiprows=1)
+    input_df = load_transcript(filepath)
     remaining_output_json = process_remaining(input_df)
     return remaining_output_json
