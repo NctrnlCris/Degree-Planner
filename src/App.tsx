@@ -180,7 +180,7 @@ function App() {
                                 const donePct = required > 0 ? (completed / required) * 100 : 0;
                                 const ipPct = required > 0 ? (inProgress / required) * 100 : 0;
                                 const effective = Math.min(completed + inProgress, required);
-                                const pct = required > 0 ? Math.round((effective / required) * 100) : 0;
+                                const pct = required > 0 ? Math.round((completed / required) * 100) : 0;
                                 const color = getProgressColor(pct);
                                 const remaining = Math.max(0, required - completed - inProgress);
                                 const ringGradient = inProgress > 0
@@ -199,7 +199,9 @@ function App() {
                                                     background: ringGradient,
                                                 }}
                                             />
-                                            <div style={styles.reqRingInner} />
+                                            <div style={styles.reqRingInner}>
+                                                 <span style={styles.reqPctText}>{pct}%</span>
+                                            </div>
                                         </div>
                                         <div style={styles.reqStats}>
                                             <span style={styles.reqCredits}>{completed}/{required} credits</span>
@@ -459,6 +461,11 @@ const styles: Record<string, React.CSSProperties> = {
         color: '#1e293b',
         textAlign: 'center',
     },
+    reqPctText: {
+        fontSize: '1rem',
+        fontWeight: 800,
+        color: '#1e293b',
+    },
     reqRingWrapper: {
         position: 'relative',
         width: 80,
@@ -476,6 +483,9 @@ const styles: Record<string, React.CSSProperties> = {
         inset: 10,
         borderRadius: '50%',
         background: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     reqStats: {
         display: 'flex',
