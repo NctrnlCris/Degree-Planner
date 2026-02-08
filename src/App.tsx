@@ -177,10 +177,15 @@ function App() {
                                 const required = data.required || 1;
                                 const completed = data.completed || 0;
                                 const inProgress = data.inProgress || 0;
+                                const donePct = required > 0 ? (completed / required) * 100 : 0;
+                                const ipPct = required > 0 ? (inProgress / required) * 100 : 0;
                                 const effective = Math.min(completed + inProgress, required);
                                 const pct = required > 0 ? Math.round((effective / required) * 100) : 0;
                                 const color = getProgressColor(pct);
                                 const remaining = Math.max(0, required - completed - inProgress);
+                                const ringGradient = inProgress > 0
+                                    ? `conic-gradient(#10b981 0% ${donePct}%, #E6BD39 ${donePct}% ${donePct + ipPct}%, #e2e8f0 ${donePct + ipPct}% 100%)`
+                                    : `conic-gradient(${color} 0% ${pct}%, #e2e8f0 ${pct}% 100%)`;
                                 return (
                                     <div key={name} style={styles.reqCard}>
                                         <div style={styles.reqCardHeader}>
@@ -191,13 +196,16 @@ function App() {
                                             <div
                                                 style={{
                                                     ...styles.reqRing,
-                                                    background: `conic-gradient(${color} 0% ${pct}%, #e2e8f0 ${pct}% 100%)`,
+                                                    background: ringGradient,
                                                 }}
                                             />
                                             <div style={styles.reqRingInner} />
                                         </div>
                                         <div style={styles.reqStats}>
                                             <span style={styles.reqCredits}>{completed}/{required} credits</span>
+                                            {inProgress > 0 && (
+                                                <span style={styles.reqInProgress}>+{inProgress} in progress</span>
+                                            )}
                                             <span style={styles.reqRemaining}>{remaining} credits remaining</span>
                                         </div>
                                     </div>
@@ -216,8 +224,9 @@ function App() {
                 {/* Right Column - Course List */}
                 <div style={styles.rightCol}>
                     <h2 style={styles.sectionTitle}>Course List</h2>
-                    <div style={styles.tabs}>
-                        {(['all', 'done', 'current', 'todo'] as const).map(tab => (
+                    <div style={styles.tabsWrapper}>
+                        <div style={styles.tabs}>
+                            {(['all', 'done', 'current', 'todo'] as const).map(tab => (
                             <button
                                 key={tab}
                                 style={{
@@ -231,7 +240,8 @@ function App() {
                                 {tab === 'current' && `Current(${inProgressList.length})`}
                                 {tab === 'todo' && `Todo(${stillNeedingList.length})`}
                             </button>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                     <div style={styles.courseList}>
                         {filteredCourses.length === 0 ? (
@@ -243,15 +253,17 @@ function App() {
                                 return (
                                     <div key={idx} style={styles.courseRow}>
                                         <div style={styles.courseInfo}>
-                                            <span style={styles.courseCode}>{course}</span>
+                                            <span style={styles.courseCode} title={course}>{course}</span>
                                         </div>
-                                        <span style={{
-                                            ...styles.courseBadge,
-                                            ...(status === 'complete' ? styles.badgeComplete :
-                                                status === 'current' ? styles.badgeCurrent : styles.badgeTodo),
-                                        }}>
-                                            {status === 'complete' && '✓ '}
-                                            {status === 'complete' ? 'Complete' : status === 'current' ? 'Current' : 'Todo'}
+                                        <span
+                                            style={{
+                                                ...styles.courseBadge,
+                                                ...(status === 'complete' ? styles.badgeComplete :
+                                                    status === 'current' ? styles.badgeCurrent : styles.badgeTodo),
+                                            }}
+                                            title={status === 'complete' ? 'Complete' : status === 'current' ? 'Current' : 'Todo'}
+                                        >
+                                            {status === 'complete' ? '✓' : status === 'current' ? '●' : '○'}
                                         </span>
                                     </div>
                                 );
@@ -293,7 +305,7 @@ const styles: Record<string, React.CSSProperties> = {
     },
     columns: {
         display: 'grid',
-        gridTemplateColumns: 'minmax(280px, 320px) minmax(400px, 1fr) minmax(280px, 340px)',
+        gridTemplateColumns: 'minmax(280px, 320px) minmax(400px, 1fr) minmax(260px, 300px)',
         gap: 24,
         padding: '0 32px 32px',
         maxWidth: 1600,
@@ -475,6 +487,11 @@ const styles: Record<string, React.CSSProperties> = {
         fontSize: '0.9rem',
         color: '#475569',
     },
+    reqInProgress: {
+        fontSize: '0.8rem',
+        color: '#E6BD39',
+        fontWeight: 600,
+    },
     reqRemaining: {
         fontSize: '0.8rem',
         color: '#94a3b8',
@@ -504,15 +521,21 @@ const styles: Record<string, React.CSSProperties> = {
         display: 'flex',
         flexDirection: 'column',
         maxHeight: 600,
+        minWidth: 0,
+    },
+    tabsWrapper: {
+        borderBottom: '1px solid #e2e8f0',
+        marginBottom: 16,
+        width: '100%',
     },
     tabs: {
-        display: 'flex',
+        display: 'inline-flex',
+        flexWrap: 'nowrap',
         gap: 0,
-        marginBottom: 16,
-        borderBottom: '1px solid #e2e8f0',
+        width: 'fit-content',
     },
     tab: {
-        padding: '10px 14px',
+        padding: '10px 4px',
         background: 'none',
         border: 'none',
         fontSize: '0.9rem',
@@ -520,6 +543,8 @@ const styles: Record<string, React.CSSProperties> = {
         cursor: 'pointer',
         borderBottom: '2px solid transparent',
         marginBottom: -1,
+        flex: '0 0 auto',
+        whiteSpace: 'nowrap',
     },
     tabActive: {
         color: '#2F4AAC',
@@ -541,25 +566,37 @@ const styles: Record<string, React.CSSProperties> = {
         alignItems: 'center',
         padding: '12px 0',
         borderBottom: '1px solid #f1f5f9',
+        gap: 12,
     },
     courseInfo: {
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
+        minWidth: 0,
+        flex: 1,
+        overflow: 'hidden',
     },
     courseCode: {
         fontSize: '0.95rem',
         fontWeight: 600,
         color: '#1e293b',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
     },
     courseCredits: {
         fontSize: '0.8rem',
         color: '#94a3b8',
     },
     courseBadge: {
-        padding: '4px 10px',
-        borderRadius: 20,
-        fontSize: '0.75rem',
+        width: 22,
+        height: 22,
+        borderRadius: '50%',
+        flexShrink: 0,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '0.65rem',
         fontWeight: 600,
     },
     badgeComplete: {
@@ -571,7 +608,7 @@ const styles: Record<string, React.CSSProperties> = {
         color: '#b45309',
     },
     badgeTodo: {
-        background: '#f1f5f9',
+        background: '#e2e8f0',
         color: '#64748b',
     },
 };
