@@ -1,47 +1,48 @@
-"""
-Main app code
-"""
-from flask import Flask, render_template, request, redirect, url_for, Response
-from processing import UPLOAD_DIR, get_processed_with_credits, get_processed_remaining
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import os
+import pandas as pd
+from processing import get_processed_with_credits, get_processed_remaining
+
 app = Flask(__name__)
+CORS(app)  # This allows your React app at localhost:5173 to talk to this server
 
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
-@app.route('/')
-def index():
-    """
-    Shows HTML for main page (mainly for testing)
-    """
-    return render_template("index.html")
-
-@app.route('/', methods=['POST'])
+@app.route('/upload', methods=['POST'])
 def upload_file():
-    """
-    Handle uploaded file and save it to the "uploads" directory.
-    """
-    uploaded_file = request.files['file']
-    if uploaded_file.filename != '':
-        uploaded_file.save(f"{UPLOAD_DIR}/{uploaded_file.filename}")
-    return redirect(url_for('index'))
-
-@app.route('/<string:file_name>/credits')
-def get_credits_info(file_name):
-    """
-    Processes the corresponding file from the URL and returns
-    the .json file with the credits breakdown for applicable requirements
-    NOTE: the URL should not contain the file extension. It is assumed to be .xlsx.
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
     
-    :param file_name: the name of the input file to process.
-    """
-    return Response(get_processed_with_credits(file_name), mimetype='application/json')
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
 
-@app.route('/<string:file_name>/remaining')
-def get_remaining_info(file_name):
-    """
-    Processes the corresponding file from the URL and returns
-    the .json file with the credits breakdown for applicable requirements
-    NOTE: the URL should not contain the file extension. It is assumed to be .xlsx.
-    
-    :param file_name: the name of the input file to process.
-    """
+    if file:
+        # Save the file temporarily
+        filename = "temp_transcript"
+        # Note: If users upload CSV, you may need to convert to .xlsx 
+        # or update processing.py to read_csv
+        filepath = os.path.join(UPLOAD_FOLDER, f"{filename}.xlsx")
+        file.save(filepath)
 
-    return Response(get_processed_remaining(file_name), mimetype='application/json')
+        try:
+            # 1. Get Credit-based data (The Progress Rings)
+            credits_json = get_processed_with_credits(filename)
+            
+            # 2. Get Remaining data (The List Cards)
+            remaining_json = get_processed_remaining(filename)
+
+            # Return both to the frontend
+            return jsonify({
+                "credits": credits_json,
+                "lists": remaining_json
+            }), 200
+            
+        except Exception as e:
+            return jsonify({"error": str(e)}), shadow_500
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)

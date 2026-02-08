@@ -26,8 +26,11 @@ function App() {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Success:", result);
-        alert("Transcript parsed! Data updated.");
+        
+        updateCreditStore(result.credits); 
+        updateListStore(result.lists); 
+      
+        alert("Transcript parsed! Dashboard updated.");
       }
     } catch (error) {
       console.error("Connection to Python backend failed:", error);
@@ -74,7 +77,7 @@ function App() {
         }}>
           <label style={{ cursor: 'pointer', color: '#3b82f6', fontWeight: 'bold', fontSize: '0.9rem' }}>
             {isUploading ? "Processing..." : "↑ Upload Transcript"}
-            <input type="file" onChange={handleFileUpload} style={{ display: 'none' }} accept=".pdf,.json" />
+            <input type="file" onChange={handleFileUpload} style={{ display: 'none' }} accept=".xlsx, .xls, .csv" />
           </label>
         </div>
       </header>
