@@ -1,7 +1,10 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+"""
+Flask backend app that handles parsing the input .xlsx file.
+"""
 import json
 import os
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from processing import get_processed_with_credits, get_processed_remaining
 
 app = Flask(__name__)
@@ -13,9 +16,12 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    """
+    Handles the file upload.
+    """
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
-    
+
     file = request.files['file']
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
@@ -33,21 +39,20 @@ def upload_file():
         try:
             # 1. Get Credit-based data (The Progress Rings)
             credits_json = get_processed_with_credits(filepath)
-            
+
             # 2. Get Remaining data (The List Cards)
             remaining_json = get_processed_remaining(filepath)
 
             # Parse JSON strings so frontend receives arrays, not escaped strings
-            credits = json.loads(credits_json)
-            lists = json.loads(remaining_json)
+            credits_output = json.loads(credits_json)
+            lists_output = json.loads(remaining_json)
 
             # Return both to the frontend
             return jsonify({
-                "credits": credits,
-                "lists": lists
+                "credits": credits_output,
+                "lists": lists_output
             }), 200
-            
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-exception-caught
             return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
