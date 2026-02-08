@@ -1,12 +1,12 @@
 # On-Track 
 ### Transforming Workday chaos into a clear graduation roadmap.
 
-**On-Track** is a student-first dashboard that replaces the confusing Workday "Academic Progress" UI. By parsing the raw Workday CSV exports using Pandas and visualizing the results with React, we provide students with a high-fidelity, actionable view of their degree status to support their education needs.
+**On-Track** is a student-first dashboard that replaces the confusing Workday "Academic Progress" UI. By parsing the raw Workday Excel exports using Pandas and visualizing the results with React, we provide students with a high-fidelity, actionable view of their degree status to support their education needs.
 
 ---
 
 ## Features
-* **Workday Parser:** Instantly converts messy `.csv` exports into structured data.
+* **Workday Parser:** Instantly converts messy Excel `.xlsx` exports into structured data.
 * **Visual Analytics:** Real-time progress rings for degree requirements.
 * **Automated Lists:** Categorizes courses into Completed, In Progress, and Incomplete.
 * **Lightweight UI:** Custom-built components for maximum speed and zero bloat.
